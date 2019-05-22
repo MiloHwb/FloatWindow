@@ -1,1 +1,1 @@
-include ':floatwindow'
+include ':floatwindow', ':app'
