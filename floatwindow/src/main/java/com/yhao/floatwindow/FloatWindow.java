@@ -2,15 +2,10 @@ package com.yhao.floatwindow;
 
 import android.animation.TimeInterpolator;
 import android.content.Context;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.MainThread;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -31,14 +26,13 @@ public class FloatWindow {
         return get(mDefaultTag);
     }
 
-    public static IFloatWindow get(@NonNull String tag) {
+    public static IFloatWindow get(String tag) {
         return mFloatWindowMap == null ? null : mFloatWindowMap.get(tag);
     }
 
     private static B mBuilder = null;
 
-    @MainThread
-    public static B with(@NonNull Context applicationContext) {
+    public static B with(Context applicationContext) {
         return mBuilder = new B(applicationContext);
     }
 
@@ -65,15 +59,12 @@ public class FloatWindow {
         int yOffset;
         boolean mShow = true;
         Class[] mActivities;
-        int mMoveType = MoveType.slide;
         int mSlideLeftMargin;
         int mSlideRightMargin;
         long mDuration = 300;
         TimeInterpolator mInterpolator;
         private String mTag = mDefaultTag;
         boolean mDesktopShow;
-        PermissionListener mPermissionListener;
-        ViewStateListener mViewStateListener;
 
         private B() {
 
@@ -83,44 +74,31 @@ public class FloatWindow {
             mApplicationContext = applicationContext;
         }
 
-        public B setView(@NonNull View view) {
-            mView = view;
+        public B setView(View view) {
             return this;
         }
 
-        public B setView(@LayoutRes int layoutId) {
-            mLayoutId = layoutId;
+        public B setView(int layoutId) {
             return this;
         }
 
         public B setWidth(int width) {
-            mWidth = width;
             return this;
         }
 
         public B setHeight(int height) {
-            mHeight = height;
             return this;
         }
 
         public B setWidth(@Screen.screenType int screenType, float ratio) {
-            mWidth = (int) ((screenType == Screen.width ?
-                    Util.getScreenWidth(mApplicationContext) :
-                    Util.getScreenHeight(mApplicationContext)) * ratio);
             return this;
         }
-
 
         public B setHeight(@Screen.screenType int screenType, float ratio) {
-            mHeight = (int) ((screenType == Screen.width ?
-                    Util.getScreenWidth(mApplicationContext) :
-                    Util.getScreenHeight(mApplicationContext)) * ratio);
             return this;
         }
 
-
         public B setX(int x) {
-            xOffset = x;
             return this;
         }
 
@@ -130,19 +108,12 @@ public class FloatWindow {
         }
 
         public B setX(@Screen.screenType int screenType, float ratio) {
-            xOffset = (int) ((screenType == Screen.width ?
-                    Util.getScreenWidth(mApplicationContext) :
-                    Util.getScreenHeight(mApplicationContext)) * ratio);
             return this;
         }
 
         public B setY(@Screen.screenType int screenType, float ratio) {
-            yOffset = (int) ((screenType == Screen.width ?
-                    Util.getScreenWidth(mApplicationContext) :
-                    Util.getScreenHeight(mApplicationContext)) * ratio);
             return this;
         }
-
 
         /**
          * 设置 Activity 过滤器，用于指定在哪些界面显示悬浮窗，默认全部界面都显示
@@ -150,38 +121,17 @@ public class FloatWindow {
          * @param show       　过滤类型,子类类型也会生效
          * @param activities 　过滤界面
          */
-        public B setFilter(boolean show, @NonNull Class... activities) {
-            mShow = show;
-            mActivities = activities;
+        public B setFilter(boolean show, Class... activities) {
             return this;
         }
 
-        public B setMoveType(@MoveType.MOVE_TYPE int moveType) {
-            return setMoveType(moveType, 0, 0);
-        }
-
-
-        /**
-         * 设置带边距的贴边动画，只有 moveType 为 MoveType.slide，设置边距才有意义，这个方法不标准，后面调整
-         *
-         * @param moveType         贴边动画 MoveType.slide
-         * @param slideLeftMargin  贴边动画左边距，默认为 0
-         * @param slideRightMargin 贴边动画右边距，默认为 0
-         */
-        public B setMoveType(@MoveType.MOVE_TYPE int moveType, int slideLeftMargin, int slideRightMargin) {
-            mMoveType = moveType;
-            mSlideLeftMargin = slideLeftMargin;
-            mSlideRightMargin = slideRightMargin;
-            return this;
-        }
-
-        public B setMoveStyle(long duration, @Nullable TimeInterpolator interpolator) {
+        public B setMoveStyle(long duration, TimeInterpolator interpolator) {
             mDuration = duration;
             mInterpolator = interpolator;
             return this;
         }
 
-        public B setTag(@NonNull String tag) {
+        public B setTag(String tag) {
             mTag = tag;
             return this;
         }
@@ -191,32 +141,8 @@ public class FloatWindow {
             return this;
         }
 
-        public B setPermissionListener(PermissionListener listener) {
-            mPermissionListener = listener;
-            return this;
-        }
-
-        public B setViewStateListener(ViewStateListener listener) {
-            mViewStateListener = listener;
-            return this;
-        }
-
         public void build() {
-            if (mFloatWindowMap == null) {
-                mFloatWindowMap = new HashMap<>();
-            }
-            if (mFloatWindowMap.containsKey(mTag)) {
-                throw new IllegalArgumentException("FloatWindow of this tag has been added, Please set a new tag for the new FloatWindow");
-            }
-            if (mView == null && mLayoutId == 0) {
-                throw new IllegalArgumentException("View has not been set!");
-            }
-            if (mView == null) {
-                mView = Util.inflate(mApplicationContext, mLayoutId);
-            }
-            IFloatWindow floatWindowImpl = new IFloatWindowImpl(this);
-            mFloatWindowMap.put(mTag, floatWindowImpl);
-        }
 
+        }
     }
 }
